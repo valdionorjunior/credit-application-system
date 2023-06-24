@@ -10,13 +10,13 @@ import java.util.*
 @Table(name = "credit")
 data class Credit (
         @Column(nullable = false, unique = true)
-        val cresditCode: UUID = UUID.randomUUID(),
+        val creditCode: UUID = UUID.randomUUID(),
         @Column(nullable = false)
         val creditValue: BigDecimal = BigDecimal.ZERO,
         @Column(nullable = false)
         val dayFirstInstallment: LocalDate,
         @Column(nullable = false)
-        val numberOfInstalments: Int = 0,
+        val numberOfInstallments: Int = 0,
 
         @Enumerated
         val status: Status = Status.IN_PROGRESS,
