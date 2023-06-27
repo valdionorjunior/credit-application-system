@@ -1,5 +1,6 @@
 package com.juniorrodrigues.credit.application.system.exception
 
+import org.springframework.dao.DataAccessException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
@@ -13,13 +14,12 @@ import java.time.LocalDateTime
 class RestExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handlerValidException(ex: MethodArgumentNotValidException): ResponseEntity<ExceptionDetails>{
-        val erros : MutableMap<String, String?> = HashMap()
-        ex.bindingResult.allErrors.stream().forEach {
-            erro: ObjectError ->
-                val fieldName: String = (erro as FieldError).field
-                val messageError: String? = erro.defaultMessage
-                erros[fieldName] = messageError
+    fun handlerValidException(ex: MethodArgumentNotValidException): ResponseEntity<ExceptionDetails> {
+        val erros: MutableMap<String, String?> = HashMap()
+        ex.bindingResult.allErrors.stream().forEach { erro: ObjectError ->
+            val fieldName: String = (erro as FieldError).field
+            val messageError: String? = erro.defaultMessage
+            erros[fieldName] = messageError
         }
         return ResponseEntity(
             ExceptionDetails(
@@ -30,5 +30,29 @@ class RestExceptionHandler {
                 details = erros
             ), HttpStatus.BAD_REQUEST
         )
+    }
+
+    @ExceptionHandler(DataAccessException::class)
+    fun handlerValidException(ex: DataAccessException): ResponseEntity<ExceptionDetails> {
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(
+                ExceptionDetails(
+                    title = "Conflict",
+                    timestamp = LocalDateTime.now(),
+                    status = HttpStatus.CONFLICT.value(),
+                    exception = ex.javaClass.simpleName,
+                    details = mutableMapOf(ex.cause.toString() to ex.message)
+                )
+            )
+//        return ResponseEntity(
+//            ExceptionDetails(
+//                title = "Bad Request",
+//                timestamp = LocalDateTime.now(),
+//                status = HttpStatus.CONFLICT.value(),
+//                exception = ex.javaClass.simpleName,
+//                details = mutableMapOf(ex.cause.toString() to ex.message )
+//            ), HttpStatus.CONFLICT
+//        )
     }
 }
