@@ -1,0 +1,1 @@
+ALTER TABLE credit RENAME COLUMN cresdit_code TO credit_code;
